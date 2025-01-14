@@ -4,31 +4,34 @@ import mail_icon from '../../assets/envelope-solid.svg'
 import facebook_icon from '../../assets/square-facebook-brands-solid.svg'
 import linkedin_icon from '../../assets/linkedin-brands-solid.svg'
 import phone_icon from '../../assets/phone-solid.svg'
+import {useState} from 'react'
 
 function Contact() {
 
-  const onSubmit = async (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.target);
+    const [result, setResult] = React.useState("");
 
-    formData.append("access_key", "224d31bf-6a5c-46ee-ac9b-0984ee2b853a");
-
-    const object = Object.fromEntries(formData);
-    const json = JSON.stringify(object);
-
-    const res = await fetch("https://api.web3forms.com/submit", {
-        methode: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json"
-        },
-        body: json
-    }).then((res) => res.json());
-
-    if (res.success){
-        alert(res.message);
-    }
-  };
+    const onSubmit = async (event) => {
+      event.preventDefault();
+      setResult("Sending....");
+      const formData = new FormData(event.target);
+  
+      formData.append("access_key", "224d31bf-6a5c-46ee-ac9b-0984ee2b853a");
+  
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData
+      });
+  
+      const data = await response.json();
+  
+      if (data.success) {
+        setResult("Form Submitted Successfully");
+        event.target.reset();
+      } else {
+        console.log("Error", data);
+        setResult(data.message);
+      }
+    };
 
   return (
     <div id='contact' className='contact'>
